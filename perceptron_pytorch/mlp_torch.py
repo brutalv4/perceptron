@@ -1,7 +1,8 @@
 # import libraries
 import torch
 import numpy as np
-
+import torch.nn as nn
+import torch.nn.functional as F
 from torchvision import datasets
 import torchvision.transforms as transforms
 
@@ -21,8 +22,6 @@ test_data = datasets.MNIST(root='data', train=False, download=True, transform=tr
 train_loader = torch.utils.data.DataLoader(train_data, batch_size=batch_size, num_workers=num_workers)
 test_loader = torch.utils.data.DataLoader(test_data, batch_size=batch_size, num_workers=num_workers)
 
-import torch.nn as nn
-import torch.nn.functional as F
 
 ## Define the NN architecture
 class Net(nn.Module):
@@ -49,7 +48,6 @@ model = Net()
 print(model)
 
 ## Specify loss and optimization functions
-
 # specify loss function
 criterion = nn.CrossEntropyLoss()
 
@@ -64,10 +62,8 @@ model.train() # prep model for training
 for epoch in range(n_epochs):
     # monitor training loss
     train_loss = 0.0
-    
-    ###################
-    # train the model #
-    ###################
+
+    # train the model
     for data, target in train_loader:
         # clear the gradients of all optimized variables
         optimizer.zero_grad()
@@ -81,17 +77,16 @@ for epoch in range(n_epochs):
         optimizer.step()
         # update running training loss
         train_loss += loss.item()*data.size(0)
-        
-    # print training statistics 
+
+    # print training statistics
     # calculate average loss over an epoch
     train_loss = train_loss/len(train_loader.dataset)
 
     print('Epoch: {} \tTraining Loss: {:.6f}'.format(
-        epoch+1, 
+        epoch+1,
         train_loss
         ))
-    
-    
+
 # initialize lists to monitor test loss and accuracy
 test_loss = 0.0
 class_correct = list(0. for i in range(10))
@@ -104,7 +99,7 @@ for data, target in test_loader:
     output = model(data)
     # calculate the loss
     loss = criterion(output, target)
-    # update test loss 
+    # update test loss
     test_loss += loss.item()*data.size(0)
     # convert output probabilities to predicted class
     _, pred = torch.max(output, 1)
